@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+build() {
+    local mod
+    for mod in nvidia nvidia_modeset nvidia_uvm nvidia_drm; do
+        unset "_autodetect_cache[$mod]"
+    done
+}

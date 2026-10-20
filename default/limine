@@ -1,0 +1,3 @@
+ESP_PATH="/boot"
+KERNEL_CMDLINE[default]+="quiet nowatchdog splash rw rootflags=subvol=/@ root=UUID=3e83de4a-0ede-47a4-a254-cf20fa800015 zswap.enabled=1 zswap.compressor=zstd zswap.max_pool_percent=20 resume=UUID=3e83de4a-0ede-47a4-a254-cf20fa800015 resume_offset=82206864"
+BOOT_ORDER="*, *lts, *fallback, Snapshots"
