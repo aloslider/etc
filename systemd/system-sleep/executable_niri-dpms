@@ -1,0 +1,39 @@
+#!/bin/sh
+# off: called by niri-dpms-before-nvidia-sleep.service, before nvidia-sleep.sh.
+# post: called by systemd-sleep after the kernel sleep returns, including
+# when that return is an error and nvidia-resume.service does not run.
+# pre: systemd-sleep also invokes every hook here.
+
+action=$1
+if [ "$action" != off ] && [ "$action" != post ]; then
+    exit 0
+fi
+
+set -- /run/user/1000/niri.wayland-*.sock
+if [ ! -S "$1" ]; then
+    exit 0
+fi
+
+socket=$1
+if [ "$action" = off ]; then
+    verb=power-off-monitors
+else
+    verb=power-on-monitors
+fi
+
+if [ "$(id -u)" -eq 0 ]; then
+    runuser -u benq -- env \
+        XDG_RUNTIME_DIR=/run/user/1000 \
+        NIRI_SOCKET="$socket" \
+        /usr/bin/niri msg action "$verb" || exit $?
+else
+    env \
+        XDG_RUNTIME_DIR=/run/user/1000 \
+        NIRI_SOCKET="$socket" \
+        /usr/bin/niri msg action "$verb" || exit $?
+fi
+
+if [ "$action" = off ]; then
+    # Let in-flight page flips drain before nvidia_modeset tears DisplayPort down.
+    sleep 0.3
+fi

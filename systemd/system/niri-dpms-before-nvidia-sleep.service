@@ -1,0 +1,13 @@
+[Unit]
+Description=Blank niri outputs before NVIDIA sleep
+Before=nvidia-suspend.service nvidia-hibernate.service
+DefaultDependencies=no
+
+[Service]
+Type=oneshot
+User=benq
+Environment=XDG_RUNTIME_DIR=/run/user/1000
+ExecStart=/etc/systemd/system-sleep/niri-dpms off
+
+[Install]
+WantedBy=nvidia-suspend.service nvidia-hibernate.service
